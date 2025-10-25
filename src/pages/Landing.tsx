@@ -1,7 +1,8 @@
-import { Shield, AlertTriangle, Lock, FileText, TrendingUp, Users } from "lucide-react";
+import { Shield, AlertTriangle, Lock, FileText, TrendingUp, Users, Smartphone, CreditCard, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -155,6 +156,154 @@ const Landing = () => {
               <p className="text-sm mt-4 opacity-80">Emergency Helpline: 1930 (Available 24/7)</p>
             </CardContent>
           </Card>
+        </div>
+      </section>
+
+      {/* Cybercrime Information Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Understanding Cybercrime</h2>
+              <p className="text-muted-foreground">
+                Learn about common cyber threats and how to protect yourself
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              <Card className="border-primary/10">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <Smartphone className="h-5 w-5 text-destructive" />
+                    </div>
+                    <CardTitle className="text-lg">Phishing Attacks</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Fraudulent attempts to obtain sensitive information by disguising as trustworthy entities through emails, messages, or websites.
+                  </p>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Verify sender email addresses</li>
+                    <li>• Do not click suspicious links</li>
+                    <li>• Check for spelling errors</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/10">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <CreditCard className="h-5 w-5 text-destructive" />
+                    </div>
+                    <CardTitle className="text-lg">Financial Fraud</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Unauthorized transactions, credit card theft, and online banking fraud targeting your financial accounts.
+                  </p>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Enable two-factor authentication</li>
+                    <li>• Monitor account statements</li>
+                    <li>• Use secure payment gateways</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/10">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <Lock className="h-5 w-5 text-destructive" />
+                    </div>
+                    <CardTitle className="text-lg">Identity Theft</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Stealing personal information to impersonate victims for financial gain or fraudulent activities.
+                  </p>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Protect personal documents</li>
+                    <li>• Use strong, unique passwords</li>
+                    <li>• Regularly check credit reports</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card className="border-primary/10">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-destructive/10">
+                      <Mail className="h-5 w-5 text-destructive" />
+                    </div>
+                    <CardTitle className="text-lg">Ransomware</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Malicious software that encrypts files and demands payment for decryption keys.
+                  </p>
+                  <ul className="text-sm space-y-1 text-muted-foreground">
+                    <li>• Regular data backups</li>
+                    <li>• Keep software updated</li>
+                    <li>• Avoid suspicious downloads</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-primary" />
+                  Frequently Asked Questions
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="item-1">
+                    <AccordionTrigger className="text-left">
+                      What should I do if I become a victim of cybercrime?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Immediately file a complaint through our portal, preserve all evidence (emails, screenshots, transaction details), change your passwords, and notify your bank if financial fraud is involved. Do not delete any communication from the perpetrator.
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="item-2">
+                    <AccordionTrigger className="text-left">
+                      How long does it take to investigate a cybercrime complaint?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Investigation timelines vary based on the complexity of the case. Simple cases may be resolved within 30-45 days, while complex cases involving international elements may take several months. You will receive regular updates on your complaint status through the dashboard.
+                    </AccordionContent>
+                  </AccordionItem>
+                  
+                  <AccordionItem value="item-3">
+                    <AccordionTrigger className="text-left">
+                      What information do I need to file a complaint?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      You will need details about the incident (date, time, location), any communication with the perpetrator, financial transaction details if applicable, screenshots or evidence, and your contact information. The more detailed information you provide, the better we can investigate.
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="item-4">
+                    <AccordionTrigger className="text-left">
+                      How can I protect myself from cybercrime?
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground">
+                      Use strong, unique passwords for each account, enable two-factor authentication, keep your software updated, be cautious of unsolicited emails and messages, verify sources before sharing personal information, regularly monitor your financial accounts, and educate yourself about common cyber threats.
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 

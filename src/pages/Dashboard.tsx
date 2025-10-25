@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { FileText, Clock, CheckCircle, XCircle, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { FileText, Clock, CheckCircle, XCircle, Search, Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -21,10 +22,24 @@ interface Complaint {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [authState, setAuthState] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
+    // Check authentication
+    const auth = localStorage.getItem("auth");
+    if (!auth) {
+      navigate("/auth");
+      return;
+    }
+    
+    const authData = JSON.parse(auth);
+    setAuthState(authData);
+    setIsAdmin(authData.role === "admin");
+
     // Load complaints from localStorage (mock database)
     const stored = localStorage.getItem("complaints");
     if (stored) {
@@ -60,7 +75,7 @@ const Dashboard = () => {
       setComplaints(demoComplaints);
       localStorage.setItem("complaints", JSON.stringify(demoComplaints));
     }
-  }, []);
+  }, [navigate]);
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
@@ -117,6 +132,10 @@ const Dashboard = () => {
     },
   ];
 
+  if (!authState) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -125,8 +144,24 @@ const Dashboard = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Complaint Dashboard</h1>
-            <p className="text-muted-foreground">Track and manage your cybercrime complaints</p>
+            <p className="text-muted-foreground">
+              {isAdmin ? "View and manage all cybercrime complaints" : "Track your cybercrime complaints"}
+            </p>
           </div>
+
+          {!isAdmin && (
+            <Card className="border-primary/20 bg-primary/5 mb-6">
+              <CardContent className="flex items-center gap-3 py-4">
+                <Lock className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">Limited Access</p>
+                  <p className="text-xs text-muted-foreground">
+                    Full complaint details are only visible to administrators
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -176,7 +211,9 @@ const Dashboard = () => {
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div>
-                        <CardTitle className="text-lg mb-2">{complaint.crimeType}</CardTitle>
+                        <CardTitle className="text-lg mb-2">
+                          {isAdmin ? complaint.crimeType : "Complaint #" + complaint.id.slice(2, 10)}
+                        </CardTitle>
                         <CardDescription className="flex items-center gap-4 text-sm">
                           <span className="font-mono">{complaint.id}</span>
                           <span>•</span>
@@ -189,31 +226,33 @@ const Dashboard = () => {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm mb-4 line-clamp-2">{complaint.description}</p>
+                  {isAdmin && (
+                    <CardContent>
+                      <p className="text-sm mb-4 line-clamp-2">{complaint.description}</p>
 
-                    {complaint.aiGuidance && (
-                      <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
-                        <h4 className="font-semibold text-sm mb-2 text-primary">{complaint.aiGuidance.title}</h4>
-                        <ul className="text-sm space-y-1">
-                          {complaint.aiGuidance.steps.slice(0, 3).map((step, idx) => (
-                            <li key={idx} className="text-muted-foreground">
-                              {step}
-                            </li>
-                          ))}
-                        </ul>
+                      {complaint.aiGuidance && (
+                        <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
+                          <h4 className="font-semibold text-sm mb-2 text-primary">{complaint.aiGuidance.title}</h4>
+                          <ul className="text-sm space-y-1">
+                            {complaint.aiGuidance.steps.slice(0, 3).map((step, idx) => (
+                              <li key={idx} className="text-muted-foreground">
+                                {step}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2 mt-4">
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                        <Button size="sm" variant="ghost">
+                          Download Report
+                        </Button>
                       </div>
-                    )}
-
-                    <div className="flex gap-2 mt-4">
-                      <Button size="sm" variant="outline">
-                        View Details
-                      </Button>
-                      <Button size="sm" variant="ghost">
-                        Download Report
-                      </Button>
-                    </div>
-                  </CardContent>
+                    </CardContent>
+                  )}
                 </Card>
               ))
             )}
