@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileText, Clock, CheckCircle, XCircle, Search, Lock } from "lucide-react";
+import { FileText, Clock, CheckCircle, XCircle, Search, Lock, ThumbsUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -18,11 +20,13 @@ interface Complaint {
   aiGuidance?: {
     title: string;
     steps: string[];
+    verified?: boolean;
   };
 }
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [authState, setAuthState] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -103,6 +107,32 @@ const Dashboard = () => {
       default:
         return "secondary";
     }
+  };
+
+  const updateComplaintStatus = (complaintId: string, newStatus: string) => {
+    const updated = complaints.map(c => 
+      c.id === complaintId ? { ...c, status: newStatus } : c
+    );
+    setComplaints(updated);
+    localStorage.setItem("complaints", JSON.stringify(updated));
+    toast({
+      title: "Status Updated",
+      description: `Complaint ${complaintId} marked as ${newStatus}`,
+    });
+  };
+
+  const verifyAIRecommendation = (complaintId: string) => {
+    const updated = complaints.map(c => 
+      c.id === complaintId && c.aiGuidance
+        ? { ...c, aiGuidance: { ...c.aiGuidance, verified: true } }
+        : c
+    );
+    setComplaints(updated);
+    localStorage.setItem("complaints", JSON.stringify(updated));
+    toast({
+      title: "AI Recommendation Verified",
+      description: "AI-suggested actions have been verified",
+    });
   };
 
   const filteredComplaints = complaints.filter(
@@ -232,18 +262,51 @@ const Dashboard = () => {
 
                       {complaint.aiGuidance && (
                         <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
-                          <h4 className="font-semibold text-sm mb-2 text-primary">{complaint.aiGuidance.title}</h4>
-                          <ul className="text-sm space-y-1">
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-semibold text-sm text-primary">{complaint.aiGuidance.title}</h4>
+                            {complaint.aiGuidance.verified && (
+                              <Badge variant="outline" className="text-xs gap-1">
+                                <CheckCircle className="h-3 w-3" />
+                                Verified
+                              </Badge>
+                            )}
+                          </div>
+                          <ul className="text-sm space-y-1 mb-3">
                             {complaint.aiGuidance.steps.slice(0, 3).map((step, idx) => (
                               <li key={idx} className="text-muted-foreground">
                                 {step}
                               </li>
                             ))}
                           </ul>
+                          {!complaint.aiGuidance.verified && (
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              onClick={() => verifyAIRecommendation(complaint.id)}
+                              className="gap-1"
+                            >
+                              <ThumbsUp className="h-3 w-3" />
+                              Verify AI Recommendations
+                            </Button>
+                          )}
                         </div>
                       )}
 
                       <div className="flex gap-2 mt-4">
+                        <Select
+                          value={complaint.status}
+                          onValueChange={(value) => updateComplaintStatus(complaint.id, value)}
+                        >
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Investigating">Under Investigation</SelectItem>
+                            <SelectItem value="Resolved">Resolved</SelectItem>
+                            <SelectItem value="Closed">Closed</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <Button size="sm" variant="outline">
                           View Details
                         </Button>
