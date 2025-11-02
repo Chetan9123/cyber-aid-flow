@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertCircle, Upload, ArrowRight, CheckCircle } from "lucide-react";
+import { predictCrimeType } from "@/lib/ai-service";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ const FileComplaint = () => {
     location: "",
     description: "",
     evidenceFiles: [] as File[],
+    aiPrediction: null as any,
   });
 
   const crimeTypes = [
@@ -38,8 +40,27 @@ const FileComplaint = () => {
     "Other",
   ];
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = async (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
+    
+    // If description field is updated, get AI prediction
+    if (field === 'description' && value.length > 20) {
+      try {
+        const prediction = await predictCrimeType(value);
+        setFormData(prev => ({
+          ...prev,
+          aiPrediction: prediction,
+          crimeType: prediction.predictedType // Auto-select predicted crime type
+        }));
+        
+        toast({
+          title: "AI Analysis Complete",
+          description: `Predicted crime type: ${prediction.predictedType} (${prediction.confidence.toFixed(1)}% confidence)`,
+        });
+      } catch (error) {
+        console.error('AI prediction error:', error);
+      }
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +119,7 @@ const FileComplaint = () => {
       ...formData,
       id: aiGuidance.complaintId,
       status: "Pending",
+      aiAnalysis: formData.aiPrediction,
       filedDate: new Date().toISOString(),
       aiGuidance,
     });

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AIAnalysisCard } from "@/components/ui/ai-analysis-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
@@ -21,6 +22,12 @@ interface Complaint {
     title: string;
     steps: string[];
     verified?: boolean;
+  };
+  aiAnalysis?: {
+    predictedType: string;
+    confidence: number;
+    riskLevel: 'low' | 'medium' | 'high';
+    subCategories?: string[];
   };
 }
 
@@ -259,6 +266,9 @@ const Dashboard = () => {
                   {isAdmin && (
                     <CardContent>
                       <p className="text-sm mb-4 line-clamp-2">{complaint.description}</p>
+                      {complaint.aiAnalysis && (
+                        <AIAnalysisCard analysis={complaint.aiAnalysis} />
+                      )}
 
                       {complaint.aiGuidance && (
                         <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 mt-4">
